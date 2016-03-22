@@ -194,6 +194,11 @@
 @property (readonly, nonatomic) NSString *refreshToken;
 
 /**
+ The OAuth scope.
+ */
+@property (readonly, nonatomic) NSString *scope;
+
+/**
  Whether the OAuth credentials are expired.
  */
 @property (readonly, nonatomic, assign, getter = isExpired) BOOL expired;
@@ -212,6 +217,17 @@
                                tokenType:(NSString *)type;
 
 /**
+ Create an OAuth credential from a token string, with a specified type.
+ 
+ @param token The OAuth token string.
+ @param type The OAuth token type.
+ @param type The OAuth scope.
+ */
++ (instancetype)credentialWithOAuthToken:(NSString *)token
+                               tokenType:(NSString *)type
+                                   scope:(NSString *)scope;
+
+/**
  Initialize an OAuth credential from a token string, with a specified type.
 
  @param token The OAuth token string.
@@ -219,6 +235,17 @@
  */
 - (id)initWithOAuthToken:(NSString *)token
                tokenType:(NSString *)type;
+
+/**
+ Initialize an OAuth credential from a token string, with a specified type.
+ 
+ @param token The OAuth token string.
+ @param type The OAuth token type.
+ @param type The OAuth scope.
+ */
+- (id)initWithOAuthToken:(NSString *)token
+               tokenType:(NSString *)type
+                   scope:(NSString *)scope;
 
 ///----------------------------
 /// @name Setting Refresh Token

@@ -186,7 +186,7 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
             refreshToken = [parameters valueForKey:@"refresh_token"];
         }
 
-        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[responseObject valueForKey:@"access_token"] tokenType:[responseObject valueForKey:@"token_type"]];
+        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[responseObject valueForKey:@"access_token"] tokenType:[responseObject valueForKey:@"token_type"] scope:[responseObject valueForKey:@"scope"]]; 
 
         NSDate *expireDate = nil;
         id expiresIn = [responseObject valueForKey:@"expires_in"];
@@ -218,6 +218,7 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
 @property (readwrite, nonatomic) NSString *accessToken;
 @property (readwrite, nonatomic) NSString *tokenType;
 @property (readwrite, nonatomic) NSString *refreshToken;
+@property (readwrite, nonatomic) NSString *scope;
 @property (readwrite, nonatomic) NSDate *expiration;
 @end
 
@@ -236,6 +237,13 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
     return [[self alloc] initWithOAuthToken:token tokenType:type];
 }
 
++ (instancetype)credentialWithOAuthToken:(NSString *)token
+                               tokenType:(NSString *)type
+                                   scope:(NSString *)scope
+{
+    return [[self alloc] initWithOAuthToken:token tokenType:type scope:scope];
+}
+
 - (id)initWithOAuthToken:(NSString *)token
                tokenType:(NSString *)type
 {
@@ -250,8 +258,23 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
     return self;
 }
 
+- (id)initWithOAuthToken:(NSString *)token
+               tokenType:(NSString *)type
+                   scope:(NSString *)scope
+{
+    self = [self initWithOAuthToken:token tokenType:type];
+    if (!self) {
+        return nil;
+    }
+    
+    self.scope = scope;
+    
+    return self;
+}
+
+
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@ accessToken:\"%@\" tokenType:\"%@\" refreshToken:\"%@\" expiration:\"%@\">", [self class], self.accessToken, self.tokenType, self.refreshToken, self.expiration];
+    return [NSString stringWithFormat:@"<%@ accessToken:\"%@\" tokenType:\"%@\" refreshToken:\"%@\" expiration:\"%@\"> scope:\"%@\">", [self class], self.accessToken, self.tokenType, self.refreshToken, self.expiration, self.scope];
 }
 
 - (void)setRefreshToken:(NSString *)refreshToken
@@ -349,6 +372,7 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
     self.accessToken = [decoder decodeObjectForKey:@"accessToken"];
     self.tokenType = [decoder decodeObjectForKey:@"tokenType"];
     self.refreshToken = [decoder decodeObjectForKey:@"refreshToken"];
+    self.scope = [decoder decodeObjectForKey:@"scope"];
     self.expiration = [decoder decodeObjectForKey:@"expiration"];
 
     return self;
@@ -358,6 +382,7 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
     [encoder encodeObject:self.accessToken forKey:@"accessToken"];
     [encoder encodeObject:self.tokenType forKey:@"tokenType"];
     [encoder encodeObject:self.refreshToken forKey:@"refreshToken"];
+    [encoder encodeObject:self.scope forKey:@"scope"];
     [encoder encodeObject:self.expiration forKey:@"expiration"];
 }
 
